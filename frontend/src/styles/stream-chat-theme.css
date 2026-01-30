@@ -1,0 +1,249 @@
+/* Premium Stream Chat Theme Overrides */
+/* Font Setup */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    /* ========================================= */
+    /* LIGHT MODE (Default) - Clean, airy, soft  */
+    /* ========================================= */
+    --str-chat__primary-color: #6366f1;
+    /* Indigo 500 */
+    --str-chat__active-primary-color: #4f46e5;
+    /* Indigo 600 */
+
+    --str-chat__surface-color: #ffffff;
+    --str-chat__secondary-surface-color: #f8fafc;
+    /* Slate 50 */
+    --str-chat__tertiary-surface-color: #f1f5f9;
+    /* Slate 100 */
+
+    --str-chat__color: #0f172a;
+    /* Slate 900 */
+    --str-chat__secondary-color: #64748b;
+    /* Slate 500 */
+    --str-chat__tertiary-color: #94a3b8;
+    /* Slate 400 */
+    --str-chat__disabled-color: #cbd5e1;
+    /* Slate 300 */
+
+    /* Message Bubbles */
+    --str-chat__message-own-background-color: #6366f1;
+    --str-chat__message-own-text-color: #ffffff;
+    --str-chat__message-own-border-color: #6366f1;
+
+    /* Modern "Squircle" Radius */
+    --str-chat__border-radius: 16px;
+}
+
+/* ========================================= */
+/* DARK MODE - Deep, vibrant, tech           */
+/* ========================================= */
+[data-theme="dark"] {
+    --str-chat__primary-color: #818cf8;
+    /* Indigo 400 */
+    --str-chat__active-primary-color: #6366f1;
+    /* Indigo 500 */
+
+    --str-chat__surface-color: #18181b;
+    /* Zinc 900 */
+    --str-chat__secondary-surface-color: #27272a;
+    /* Zinc 800 */
+    --str-chat__tertiary-surface-color: #3f3f46;
+    /* Zinc 700 */
+
+    --str-chat__color: #f4f4f5;
+    /* Zinc 100 */
+    --str-chat__secondary-color: #a1a1aa;
+    /* Zinc 400 */
+    --str-chat__tertiary-color: #71717a;
+    /* Zinc 500 */
+    --str-chat__disabled-color: #52525b;
+    /* Zinc 600 */
+
+    --str-chat__message-own-background-color: #4f46e5;
+    --str-chat__message-own-text-color: #ffffff;
+    --str-chat__message-own-border-color: #4f46e5;
+}
+
+/* ========================================= */
+/* COMPONENT RESETS & MODERNIZATION          */
+/* ========================================= */
+
+/* Main Container */
+.str-chat {
+    background-color: var(--str-chat__surface-color);
+}
+
+/* Remove default borders/backgrounds for cleaner look */
+.str-chat__ul,
+.str-chat__list,
+.str-chat__virtual-list,
+.str-chat__li,
+.str-chat__message-simple,
+.str-chat__message-group,
+.str-chat__message-list,
+.str-chat__message-text-inner {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Channel List - Side Panel */
+.str-chat__channel-list {
+    background-color: var(--str-chat__surface-color);
+    border-right: 1px solid var(--str-chat__tertiary-surface-color);
+}
+
+.str-chat__channel-preview {
+    border-bottom: 1px solid transparent;
+    margin: 4px 8px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.str-chat__channel-preview:hover {
+    background-color: var(--str-chat__secondary-surface-color);
+}
+
+.str-chat__channel-preview--active {
+    background-color: var(--str-chat__secondary-surface-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Headers */
+.str-chat__channel-header {
+    background-color: var(--str-chat__surface-color);
+    border-bottom: 1px solid var(--str-chat__tertiary-surface-color);
+    height: 72px;
+    /* Taller, more breathing room */
+}
+
+/* Message List Area */
+.str-chat__list-container,
+.str-chat__main-panel {
+    background-color: var(--str-chat__secondary-surface-color) !important;
+}
+
+/* Message Bubbles */
+.str-chat__message-simple__content--own {
+    background: linear-gradient(135deg, var(--str-chat__primary-color), var(--str-chat__active-primary-color));
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    /* Subtle glowing shadow */
+    border-radius: 20px 20px 4px 20px !important;
+}
+
+.str-chat__message-simple__content--other {
+    background-color: var(--str-chat__surface-color);
+    color: var(--str-chat__color);
+    border: 1px solid var(--str-chat__tertiary-surface-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    border-radius: 20px 20px 20px 4px !important;
+}
+
+.str-chat__message-text-inner {
+    flex: 1;
+}
+
+/* Input Area - Aggressive Overrides */
+.str-chat__message-input {
+    background-color: transparent !important;
+    /* Let container bg show */
+    border-top: none !important;
+    padding: 20px !important;
+}
+
+/* Target multiple possible wrappers to ensure we catch the right one */
+.str-chat__input-flat,
+.str-chat__input-flat-wrapper,
+.str-chat__message-input--textarea-wrapper {
+    background-color: var(--str-chat__secondary-surface-color) !important;
+    border: 2px solid var(--str-chat__primary-color) !important;
+    border-radius: 9999px !important;
+    /* Force Pill */
+    padding: 2px 16px !important;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3) !important;
+    margin-top: 0 !important;
+    align-items: center !important;
+}
+
+.str-chat__input-flat:focus-within,
+.str-chat__input-flat-wrapper:focus-within {
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.6) !important;
+    background-color: var(--str-chat__surface-color) !important;
+    transform: scale(1.02);
+}
+
+/* Remove default borders from inner elements */
+.str-chat__input-flat .str-chat__textarea,
+.str-chat__input-flat-wrapper .str-chat__textarea {
+    background: transparent !important;
+    border: none !important;
+}
+
+.str-chat__textarea textarea {
+    min-height: 40px !important;
+    max-height: 120px !important;
+    padding: 10px !important;
+    margin: 0 !important;
+}
+
+/* Fix icons alignment */
+.str-chat__input-flat .str-chat__send-button,
+.str-chat__input-flat .str-chat__file-input-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    margin: 0 8px;
+}
+
+/* Hide Pseudo-elements (Nuclear Option maintenance) */
+.str-chat__li::before,
+.str-chat__li::after,
+.str-chat__message-simple::before,
+.str-chat__message-simple::after {
+    display: none !important;
+}
+
+/* Date Separators - Minimalist Pill */
+.str-chat__date-separator {
+    margin: 24px 0 !important;
+}
+
+.str-chat__date-separator-line {
+    background-color: var(--str-chat__tertiary-surface-color) !important;
+    height: 1px !important;
+}
+
+.str-chat__date-separator-date {
+    background-color: var(--str-chat__secondary-surface-color) !important;
+    color: var(--str-chat__tertiary-color) !important;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 12px !important;
+    border-radius: 100px;
+    border: 1px solid var(--str-chat__tertiary-surface-color);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--str-chat__disabled-color);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--str-chat__tertiary-color);
+}

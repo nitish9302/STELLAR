@@ -1,5 +1,6 @@
 
 import { useEffect, useState, useRef } from "react";
+import "../styles/stream-chat-theme.css";
 import { useParams } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
 import { useQuery } from "@tanstack/react-query";
@@ -274,72 +275,77 @@ const ChatPageContent = ({ socket }) => {
     };
 
     return (
-        <div className="h-[93vh]">
-            <Chat client={chatClient}>
-                <Channel
-                    channel={channel}
-                    Message={CustomMessage} // Use custom message component
-                >
-                    <PrivacyGuard onScreenshotAttempt={handleScreenshotAttempt}>
+        <div className="flex items-center justify-center p-4 bg-base-200/50 backdrop-blur-3xl h-[92vh]">
+            <div className="w-full max-w-[1600px] h-full bg-base-100 rounded-2xl shadow-2xl border border-base-300 overflow-hidden relative isolate">
+                {/* Background Pattern/Glow Effects */}
+                <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-base-100 to-base-100 opacity-50"></div>
 
-                        {/* Automated Security Badge */}
-                        <SecurityBadge />
+                <Chat client={chatClient}>
+                    <Channel
+                        channel={channel}
+                        Message={CustomMessage} // Use custom message component
+                    >
+                        <PrivacyGuard onScreenshotAttempt={handleScreenshotAttempt}>
 
-                        <div className="w-full relative h-full flex flex-col">
-                            <Window>
-                                {/* Combined Header Area */}
-                                <div className="relative">
-                                    <ChannelHeader />
-                                    {/* ChatControls positioned absolutely within ChannelHeader */}
-                                    <div className="absolute top-0 right-0 h-full flex items-center pr-3">
-                                        <ChatControls ioChannel={socket} handleVideoCall={handleVideoCall} key={channelUpdateVersion} channelId={channel.id} />
+                            {/* Automated Security Badge */}
+                            <SecurityBadge />
+
+                            <div className="w-full relative h-full flex flex-col">
+                                <Window>
+                                    {/* Combined Header Area */}
+                                    <div className="relative">
+                                        <ChannelHeader />
+                                        {/* ChatControls positioned absolutely within ChannelHeader */}
+                                        <div className="absolute top-0 right-0 h-full flex items-center pr-3">
+                                            <ChatControls ioChannel={socket} handleVideoCall={handleVideoCall} key={channelUpdateVersion} channelId={channel.id} />
+                                        </div>
                                     </div>
-                                </div>
 
 
-                                {/* Disappearing Message Banner */}
-                                <DisappearingBanner socket={socket} />
+                                    {/* Disappearing Message Banner */}
+                                    <DisappearingBanner socket={socket} />
 
-                                <MessageList />
-                                <div className="flex items-center w-full p-2 gap-2">
-                                    <VoiceMessageRecorder channel={channel} />
-                                    <div className="flex-1">
-                                        {/* Wrapping in div to ensure correct layout */}
-                                        <MessageInput
-                                            focus
-                                            overrideSubmitHandler={overrideSubmitHandler}
+                                    <MessageList />
+                                    <div className="flex items-center w-full p-2 gap-2">
+                                        <VoiceMessageRecorder channel={channel} />
+                                        <div className="flex-1">
+                                            {/* Wrapping in div to ensure correct layout */}
+                                            <MessageInput
+                                                focus
+                                                overrideSubmitHandler={overrideSubmitHandler}
+                                            />
+                                        </div>
+                                        <EmojiPickerButton
+                                            onEmojiSelect={(emoji) => {
+                                                console.log('🎯 Emoji clicked:', emoji);
+                                                const textarea = document.querySelector('.str-chat__textarea__textarea');
+                                                if (textarea) {
+                                                    const currentValue = textarea.value || '';
+                                                    const newValue = currentValue + emoji;
+
+                                                    // Set value using native setter
+                                                    const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
+                                                    setter.call(textarea, newValue);
+
+                                                    // Trigger events
+                                                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                                                    textarea.dispatchEvent(new Event('change', { bubbles: true }));
+                                                    textarea.focus();
+
+                                                    console.log('✅ Emoji added:', newValue);
+                                                } else {
+                                                    console.error('❌ Textarea not found');
+                                                }
+                                            }}
                                         />
                                     </div>
-                                    <EmojiPickerButton
-                                        onEmojiSelect={(emoji) => {
-                                            console.log('🎯 Emoji clicked:', emoji);
-                                            const textarea = document.querySelector('.str-chat__textarea__textarea');
-                                            if (textarea) {
-                                                const currentValue = textarea.value || '';
-                                                const newValue = currentValue + emoji;
-
-                                                // Set value using native setter
-                                                const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
-                                                setter.call(textarea, newValue);
-
-                                                // Trigger events
-                                                textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                                                textarea.dispatchEvent(new Event('change', { bubbles: true }));
-                                                textarea.focus();
-
-                                                console.log('✅ Emoji added:', newValue);
-                                            } else {
-                                                console.error('❌ Textarea not found');
-                                            }
-                                        }}
-                                    />
-                                </div>
-                            </Window>
-                        </div>
-                    </PrivacyGuard>
-                    <Thread />
-                </Channel>
-            </Chat>
+                                </Window>
+                            </div>
+                        </PrivacyGuard>
+                        <Thread />
+                    </Channel>
+                </Chat>
+            </div>
         </div>
     );
 };
