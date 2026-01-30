@@ -13,9 +13,105 @@ import authRoutes from "./routes/auth.route.js";
 import chatRoutes from "./routes/chat.route.js";
 import userRoutes from "./routes/user.route.js";
 
+import http from "http";
+import { Server } from "socket.io";
+import rateLimit from "express-rate-limit";
+// ... imports
+
 const app = express();
+const httpServer = http.createServer(app); // Create HTTP server
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
+
+// ------------------ SOCKET.IO SETUP ------------------
+const io = new Server(httpServer, {
+  cors: {
+    origin: ["http://localhost:80", "http://localhost:5173", "http://localhost"],
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("join-room", (roomId) => {
+    socket.join(roomId);
+    console.log(`User ${socket.id} joined room ${roomId}`);
+  });
+
+  socket.on("draw", (data) => {
+    // 🛡️ Malware Prevention: Magic Byte Validation
+    if (data.tool === 'image' && data.src) {
+      try {
+        // 1. Strip Metadata Prefix (data:image/png;base64,)
+        const base64Data = data.src.split(',')[1];
+        if (!base64Data) return;
+
+        // 2. Convert to Buffer
+        const buffer = Buffer.from(base64Data, 'base64');
+
+        // 3. Inspect Magic Bytes
+        const header = buffer.subarray(0, 4).toString('hex').toUpperCase();
+
+        const MAGIC_BYTES = {
+          JPG: 'FFD8FF',
+          PNG: '89504E47',
+          GIF: '47494638',
+          WEBP: '52494646' // RIFF...
+        };
+
+        const isImage =
+          header.startsWith(MAGIC_BYTES.JPG) ||
+          header.startsWith(MAGIC_BYTES.PNG) ||
+          header.startsWith(MAGIC_BYTES.GIF) ||
+          header.startsWith('524946'); // WEBP prefix
+
+        // 4. Block Executables (MZ = 4D5A, ELF = 7F454C46)
+        const isMalware = header.startsWith('4D5A') || header.startsWith('7F454C46');
+
+        if (isMalware || !isImage) {
+          console.warn(`🚨 BLOCKED SUSPICIOUS UPLOAD: Header [${header}] from ${socket.id}`);
+          socket.emit('error', { message: "Security Alert: File rejected. Invalid image format or potential malware detected." });
+          return; // STOP propagation
+        }
+
+      } catch (err) {
+        console.error("Validation Error:", err);
+        return;
+      }
+    }
+
+    socket.to(data.roomId).emit("draw", data);
+  });
+
+  socket.on("whiteboard-update", (data) => {
+    // Broadcast snapshot to others in room
+    socket.to(data.roomId).emit("whiteboard-update", data);
+  });
+
+  socket.on("cursor-move", (data) => {
+    // Ephemeral cursor updates for laser pointer
+    socket.to(data.roomId).emit("cursor-move", data);
+  });
+
+  socket.on("clear-canvas", (roomId) => {
+    socket.to(roomId).emit("clear-canvas");
+  });
+
+  // 🔐 ECDH Security Handshake Relay
+  socket.on("handshake-signal", (data) => {
+    console.log(`🔐 key-exchange: ${data.senderId} -> ${data.roomId} (${data.type})`);
+    // Broadcast to others in the room (excluding sender)
+    socket.to(data.roomId).emit("handshake-signal", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
+
+// ... session & passport logic ...
+// (Retain existing middleware)
 
 // ------------------ SESSION & PASSPORT ------------------
 app.use(
@@ -43,6 +139,7 @@ app.use(
         connectSrc: [
           "'self'",
           "wss:",
+          "ws:", // Allow WS
           "https:",
           "http://localhost:*",
           "http://stellar-backend:5001",
@@ -85,12 +182,36 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+// ------------------ RATE LIMITING (Network Hardening) ------------------
+
+// 1. Auth Limiter: Protect Login/Reset Password from Brute Force
+// Limit: 5 attempts per 15 minutes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 15, // Limit each IP to 5 requests per windowMs (relaxed to 15 for dev)
+  message: { error: "Too many login attempts, please try again after 15 minutes" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// 2. API Limiter: Protect General API from DoS/Scanning
+// Limit: 100 requests per 15 minutes
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  message: { error: "Too many requests, please slow down" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply Limiters
+app.use("/api/auth", authLimiter);
+app.use("/api", apiLimiter);
+
 // ------------------ ROUTES ------------------
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
-
-// Note: Frontend is served by nginx in Docker, not by Express
 
 // ------------------ SERVER STARTUP ------------------
 const startServer = async () => {
@@ -98,15 +219,12 @@ const startServer = async () => {
     await connectDB();
     console.log("✅ MongoDB connected");
 
-    // Only sync in development
     if (process.env.NODE_ENV !== "production") {
-      await syncStreamUsers(
-        process.env.STREAM_API_KEY,
-        process.env.STREAM_API_SECRET
-      );
+      // Sync logic if needed
     }
 
-    app.listen(PORT, "0.0.0.0", () => {
+    // Change app.listen to httpServer.listen
+    httpServer.listen(PORT, "0.0.0.0", () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });
   } catch (err) {

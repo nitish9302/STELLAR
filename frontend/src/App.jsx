@@ -15,6 +15,7 @@ import Layout from "./components/Layout.jsx";
 import PageLoader from "./components/PageLoader.jsx";
 import useAuthUser from "./hooks/useAuthUser.js";
 import { useThemeStore } from "./store/useThemeStore.js";
+import WhiteboardPage from "./pages/WhiteboardPage.jsx";
 
 const App = () => {
   const { isLoading, authUser } = useAuthUser();
@@ -131,6 +132,12 @@ const App = () => {
             ) : (
               <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
             )
+          }
+        />
+        <Route
+          path="/whiteboard/:channelId"
+          element={
+            isAuthenticated ? <WhiteboardPage /> : <Navigate to="/login" />
           }
         />
       </Routes>
