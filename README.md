@@ -12,6 +12,33 @@ Traditional language learning tools often suffer from fragmentation, forcing use
 
 Stellar addresses these challenges by centrally orchestrating all communication modalities—audio, video, text, and drawing—within a secure, validated execution environment.
 
+## ✨ Premium Features
+
+Stellar includes advanced capabilities often found only in enterprise-grade software:
+
+### 👻 Ghost Protocol (Privacy Shield)
+Prevents side-channel traffic analysis by normalizing packet sizes.
+- **Traffic Padding**: All encrypted messages are padded to a constant bit rate (`2048 bytes`), making it impossible for network sniffers to distinguish between short "Hello" messages and longer tactical commands based on packet size.
+- **Visual Feedback**: A "Ghost Protocol" badge appears in the chat when active, assuring users of enhanced privacy.
+
+### 🏷️ Smart Badging System
+A comprehensive visual status system that keeps users informed at a glance:
+- **Security Badges**: Dynamic indicators (Green/Yellow/Red) showing real-time encryption status (Secured/Negotiating/Error).
+- **Notification Badges**: Real-time counters for friend requests and unread messages.
+- **Status Indicators**: Live "Online/Offline" presence detection.
+
+### ⏳ Disappearing Messages (Ephemeral Chat)
+For sensitive conversations, users can enable auto-deletion timers.
+- **Flexible Timers**: Configurable lifetimes ranging from 1 minute to 24 hours.
+- **Synchronized State**: A persistent banner alerts all participants when ephemeral mode is active.
+- **Auto-Purge**: Messages are automatically removed from the UI and backend once the timer expires.
+
+### 🎙️ Crystal-Clear Voice Messaging
+- **Integrated Recorder**: Built-in voice recorder with waveform visualization and pulse animations.
+- **One-Click Send**: Seamlessly upload and send audio notes directly within the chat stream.
+
+---
+
 ## System Architecture and Technology Stack
 
 The application follows a modular architecture, separating concerns between a robust high-throughput backend and a responsive, client-side rendered frontend.
