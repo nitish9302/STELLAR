@@ -77,9 +77,10 @@ const ChatPageContent = ({ socket }) => {
     const { authUser } = useAuthUser();
 
     const { data: tokenData } = useQuery({
-        queryKey: ["streamToken"],
+        queryKey: ["streamToken", authUser?._id],
         queryFn: getStreamToken,
         enabled: !!authUser,
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
     useEffect(() => {
@@ -291,7 +292,7 @@ const ChatPageContent = ({ socket }) => {
                                     <ChannelHeader />
                                     {/* ChatControls positioned absolutely within ChannelHeader */}
                                     <div className="absolute top-0 right-0 h-full flex items-center pr-3">
-                                        <ChatControls ioChannel={socket} handleVideoCall={handleVideoCall} key={channelUpdateVersion} />
+                                        <ChatControls ioChannel={socket} handleVideoCall={handleVideoCall} key={channelUpdateVersion} channelId={channel.id} />
                                     </div>
                                 </div>
 

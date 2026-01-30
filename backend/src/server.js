@@ -8,6 +8,7 @@ import path from "path";
 import passport from "./lib/passport.js";
 
 import { connectDB } from "./lib/db.js";
+import { streamClient } from "./lib/stream.js";
 import { syncStreamUsers } from "./lib/scripts/syncStreamUsers.js";
 import authRoutes from "./routes/auth.route.js";
 import chatRoutes from "./routes/chat.route.js";
@@ -103,6 +104,41 @@ io.on("connection", (socket) => {
     console.log(`🔐 key-exchange: ${data.senderId} -> ${data.roomId} (${data.type})`);
     // Broadcast to others in the room (excluding sender)
     socket.to(data.roomId).emit("handshake-signal", data);
+  });
+
+  // 👻 Disappearing Messages Toggle
+  socket.on("toggle-disappearing", async (data) => {
+    // data: { roomId, enabled, duration }
+    console.log("👻 Toggle disappearing:", data);
+
+    try {
+      if (!data.roomId) {
+        console.error("❌ Missing roomId in toggle-disappearing");
+        return;
+      }
+
+      // 1. Update Stream Chat Channel
+      const channel = streamClient.channel('messaging', data.roomId);
+      await channel.updatePartial({
+        set: {
+          disappearingSettings: {
+            enabled: data.enabled,
+            duration: data.duration
+          }
+        }
+      });
+      console.log(`✅ Stream Chat channel ${data.roomId} updated with disappearing settings`);
+
+      // 2. Broadcast to Socket.io clients (for real-time banner updates if needed)
+      // Note: Stream Chat client might also receive 'channel.updated' event
+      io.to(data.roomId).emit("disappearing-updated", {
+        enabled: data.enabled,
+        duration: data.duration
+      });
+
+    } catch (err) {
+      console.error("❌ Failed to update disappearing settings:", err);
+    }
   });
 
   socket.on("disconnect", () => {

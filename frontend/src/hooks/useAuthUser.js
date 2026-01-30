@@ -6,6 +6,7 @@ const useAuthUser = () => {
     queryKey: ["authUser"],
     queryFn: getAuthUser,
     retry: false, // auth check
+    staleTime: 1000 * 60 * 5, // 5 minutes (user data rarely changes)
   });
 
   return { isLoading: authUser.isLoading, authUser: authUser.data?.user };

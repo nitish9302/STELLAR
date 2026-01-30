@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { VideoIcon, Settings, Clock, Trash2, Palette } from "lucide-react";
 
-function ChatControls({ ioChannel, handleVideoCall }) {
+function ChatControls({ ioChannel, handleVideoCall, channelId }) {
     const navigate = useNavigate();
     const [disappearingSettings, setDisappearingSettings] = useState({
         enabled: false,
@@ -39,6 +39,7 @@ function ChatControls({ ioChannel, handleVideoCall }) {
         }
 
         const newSettings = {
+            roomId: channelId,
             enabled,
             duration: parseInt(duration),
         };
