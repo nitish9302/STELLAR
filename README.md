@@ -49,23 +49,19 @@ The entire application stack is containerized using Docker to ensure environment
 
 ---
 
-## Security Engineering
+## 🛡️ Security Features Breakdown
 
-Security is not an add-on but a foundational component of the Stellar architecture.
+Stellar utilizes a **Defense-in-Depth** strategy, implementing multiple layers of security controls to protect user data and application integrity.
 
-### 1. Magic Byte Validation for File Uploads
-Relying solely on file extensions for validation is insecure, as malicious executables can easily be renamed (e.g., `malware.exe` to `image.png`). Stellar implements "Magic Byte" inspection, reading the first few bytes of the file buffer to verify its widespread hexadecimal signature (e.g., `FF D8 FF` for JPEG), ensuring the file type is authentic before processing.
-
-### 2. Network Hardening (Rate Limiting)
-To mitigate Denial-of-Service (DoS) and Brute Force attacks, the application implements distinct rate limiters:
-- **Authentication Limiter**: strict throttling on login endpoints (e.g., 5 attempts/15 mins) to prevent password guessing.
-- **API Limiter**: General throttling on resource endpoints to maintain system stability under load.
-
-### 3. Content Security Policy (CSP)
-Using the `helmet` middleware, Stellar enforces a strict Content Security Policy. This prevents Cross-Site Scripting (XSS) by whitelisting trusted content sources (scripts, images, connection endpoints) and blocking inline scripts or unauthorized external resources.
-
-### 4. Secure Authentication Flow
-Authentication is managed via Passport.js (Google OAuth strategy), utilizing secure, HTTP-only, SameSite cookies to manage sessions. This prevents Client-Side script access to session tokens, neutralizing a wide class of XSS token theft vectors.
+| Feature | Type | Description |
+| :--- | :--- | :--- |
+| **Magic Byte Validation** | *Input Validation* | Prevents malicious file uploads (e.g., masking `.exe` as `.jpg`) by inspecting the file's binary signature (Magic Bytes) rather than trusting the file extension. |
+| **Helmet.js** | *HTTP Hardening* | Secures HTTP headers by setting `Content-Security-Policy`, `X-Frame-Options`, and `X-Content-Type-Options` to mitigate XSS, Clickjacking, and MIME-sniffing attacks. |
+| **Rate Limiting** | *Traffic Control* | Implements `express-rate-limit` on API and Auth routes to prevent Brute Force login attempts and Denial-of-Service (DoS) attacks from malicious IPs. |
+| **HttpOnly Cookies** | *Session Security* | Stores session tokens in `HttpOnly` cookies, making them inaccessible to client-side JavaScript. This neutralizes Cross-Site Scripting (XSS) attacks trying to steal session credentials. |
+| **Strict CORS Policy** | *Access Control* | Cross-Origin Resource Sharing is restrictively configured to allow requests *only* from trusted frontend domains, preventing unauthorized cross-origin API calls. |
+| **Socket.io Origin Checks** | *Real-time Security* | The signaling server strictly validates the handshake origin, ensuring only clients from the approved dashboard can establish a WebSocket connection. |
+| **OAuth 2.0 via Passport** | *Authentication* | Delegates credential handling to Google's robust OAuth provider, reducing the risk of password leaks or weak credential storage on the server side. |
 
 ---
 
