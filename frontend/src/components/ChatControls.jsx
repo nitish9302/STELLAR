@@ -49,13 +49,10 @@ function ChatControls({ ioChannel, handleVideoCall, channelId }) {
     };
 
     const handleWhiteboard = () => {
-        // Extract the other user's ID from the current chat URL
-        const currentPath = window.location.pathname;
-        const userId = currentPath.split("/chat/")[1];
-        if (userId) {
-            navigate(`/whiteboard/${userId}`);
+        if (channelId) {
+            navigate(`/whiteboard/${channelId}`);
         } else {
-            toast.error("Could not determine user ID");
+            toast.error("Could not determine channel ID");
         }
     };
 

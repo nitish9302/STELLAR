@@ -150,6 +150,8 @@ io.on("connection", (socket) => {
 // (Retain existing middleware)
 
 // ------------------ SESSION & PASSPORT ------------------
+app.set("trust proxy", 1); // Trust Nginx proxy
+
 app.use(
   session({
     secret: process.env.JWT_SECRET_KEY,
@@ -157,7 +159,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production", // simple check, or use "auto" if supported
+      sameSite: process.env.NODE_ENV === "production" ? "lax" : "lax", // Ensure cookies work in Docker
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     },
   })
@@ -221,20 +224,20 @@ app.use(cookieParser());
 // ------------------ RATE LIMITING (Network Hardening) ------------------
 
 // 1. Auth Limiter: Protect Login/Reset Password from Brute Force
-// Limit: 5 attempts per 15 minutes
+// Limit: 100 attempts per 15 minutes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 15, // Limit each IP to 5 requests per windowMs (relaxed to 15 for dev)
+  max: 100, // Increased for dev
   message: { error: "Too many login attempts, please try again after 15 minutes" },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 // 2. API Limiter: Protect General API from DoS/Scanning
-// Limit: 100 requests per 15 minutes
+// Limit: 1000 requests per 15 minutes
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 300,
+  max: 1000, // Increased for dev
   message: { error: "Too many requests, please slow down" },
   standardHeaders: true,
   legacyHeaders: false,

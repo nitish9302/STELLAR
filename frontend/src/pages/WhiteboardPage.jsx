@@ -30,7 +30,7 @@ const WhiteboardPage = () => {
 
     // Socket Setup
     useEffect(() => {
-        const backendUrl = window.location.hostname === 'localhost' ? 'http://localhost:5001' : '/';
+        const backendUrl = "/";
         const newSocket = io(backendUrl, { transports: ['websocket', 'polling'] });
 
         setSocket(newSocket);
