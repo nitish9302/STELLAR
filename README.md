@@ -12,54 +12,59 @@ Traditional language learning tools often suffer from fragmentation, forcing use
 
 Stellar addresses these challenges by centrally orchestrating all communication modalities—audio, video, text, and drawing—within a secure, validated execution environment.
 
-## ✨ Premium Features
+## Comprehensive Feature Suite
 
-Stellar includes advanced capabilities often found only in enterprise-grade software:
+### Frontend Features
+- **Concurrent Rendering**: Powered by React 19, enabling seamless UI transitions even during heavy data synchronization.
+- **Client-Side Optimization**: Built with Vite for optimized asset bundling, tree-shaking, and lazy loading of heavy components (e.g., Whiteboard, Video SDK).
+- **Responsive Design System**: Implemented using Tailwind CSS and DaisyUI, ensuring full accessibility and responsiveness across all device viewports.
+- **Transient State Management**: Utilizes Zustand for high-velocity state updates (cursor tracking, drawing deltas) to bypass React's reconciliation cycle for performance.
+- **Form Management**: Robust form validation and error handling for authentication and user profiles.
 
-### 👻 Ghost Protocol (Privacy Shield)
-Prevents side-channel traffic analysis by normalizing packet sizes.
-- **Traffic Padding**: All encrypted messages are padded to a constant bit rate (`2048 bytes`), making it impossible for network sniffers to distinguish between short "Hello" messages and longer tactical commands based on packet size.
-- **Visual Feedback**: A "Ghost Protocol" badge appears in the chat when active, assuring users of enhanced privacy.
+### Backend Features
+- **Event-Driven Architecture**: Built on Node.js to handle thousands of concurrent WebSocket connections efficiently.
+- **Unopinionated Routing**: Express.js middleware chain allows for modular route handlers and custom security injection.
+- **Data Persistence**: MongoDB with Mongoose ORM provides a flexible schema for user data, chat history, and whiteboards.
+- **Secure Session Management**: Passport.js integration with Google OAuth 2.0 and HttpOnly/SameSite cookie policies.
+- **Automated Maintenance**: Scheduled scripts for syncing user data with external services (Stream Chat).
 
-### 🏷️ Smart Badging System
-A comprehensive visual status system that keeps users informed at a glance:
-- **Security Badges**: Dynamic indicators (Green/Yellow/Red) showing real-time encryption status (Secured/Negotiating/Error).
-- **Notification Badges**: Real-time counters for friend requests and unread messages.
-- **Status Indicators**: Live "Online/Offline" presence detection.
+### Premium Capabilities
+- **Ghost Protocol (Privacy Shield)**: Mitigates traffic analysis by padding all encrypted messages to a constant bit rate (2048 bytes).
+- **Smart Badging System**: Dynamic visual indicators for security status, real-time notifications, and online presence.
+- **Disappearing Messages**: Ephemeral chat functionality with synchronization across all clients and auto-purge mechanisms.
+- **Voice Messaging**: Integrated audio recorder with waveform visualization and secure blob storage.
 
-### ⏳ Disappearing Messages (Ephemeral Chat)
-For sensitive conversations, users can enable auto-deletion timers.
-- **Flexible Timers**: Configurable lifetimes ranging from 1 minute to 24 hours.
-- **Synchronized State**: A persistent banner alerts all participants when ephemeral mode is active.
-- **Auto-Purge**: Messages are automatically removed from the UI and backend once the timer expires.
+## Collaborative Learning Mechanics
 
-### 🎙️ Crystal-Clear Voice Messaging
-- **Integrated Recorder**: Built-in voice recorder with waveform visualization and pulse animations.
-- **One-Click Send**: Seamlessly upload and send audio notes directly within the chat stream.
+Stellar is engineered to facilitate deep, synchronous collaboration, mimicking a physical classroom environment.
 
----
+### 1. Synchronized Visual Context
+The interactive whiteboard (powered by Tldraw) is fully synchronized across all connected clients.
+- **Use Case**: A teacher can draw a diagram explaining grammar rules, and the student sees the strokes in real-time.
+- **Multi-User Editing**: Both parties can annotate, erase, and point (using the Laser tool) simultaneously without conflict.
 
-## System Architecture and Technology Stack
+### 2. Dual-Channel Communication
+By integrating Video/Audio calls directly alongside the Chat and Whiteboard:
+- **Use Case**: Users can practice pronunciation (Video) while typing out spelling corrections (Chat) and visualizing sentence structures (Whiteboard) all in the same window.
+- **Context Preservation**: No need to "tab-switch" means the learning context is never lost.
 
-The application follows a modular architecture, separating concerns between a robust high-throughput backend and a responsive, client-side rendered frontend.
+### 3. Persistent History
+unlike standard video call apps, Stellar maintains chat history.
+- **Use Case**: Resources, links, or corrections sent during a session remain accessible after the call ends, allowing for asynchronous review.
 
-### Frontend Architecture
-**Technology:** React 19, Vite, Tailwind CSS
-- **React 19**: Chosen for its concurrent rendering capabilities and improved state management, ensuring smooth UI updates even during heavy real-time activity.
-- **Vite**: Utilized as the build tool to provide sub-second hot module replacement (HMR) and optimized production enhancements (tree-shaking, code-splitting).
-- **Zustand**: Implements a transient state management strategy (outside the React reconciliation cycle) for frequent high-velocity updates like cursor movements and whiteboard strokes, minimizing re-renders.
+## Usage Guide for Collaborative Learning
 
-### Backend Architecture
-**Technology:** Node.js, Express.js, MongoDB
-- **Node.js**: The event-driven, non-blocking I/O model of Node.js is critical for handling thousands of concurrent open socket connections required for real-time features.
-- **Express.js**: Provides a thin, unopinionated layer for routing and middleware execution, allowing for custom security implementations.
-- **MongoDB**: A NoSQL document store was selected for its flexibility in handling variable data schemas (chat messages, user profiles) and its high write throughput.
+### Starting a Session
+1.  **Log In**: Authenticate securely using your Google account.
+2.  **Add Friends**: Navigate to the Friends tab and search for your peer or tutor.
+3.  **Initiate Call**: Click the Video Call icon to start a secure, encrypted media session.
 
-### Real-Time Engine
-- **Socket.io**: Powers the signaling server for establishing peer-to-peer connections and broadcasting low-latency events (cursor positions, whiteboard deltas).
-- **Stream SDKs**: Dedicated edge networks are leveraged for chat persistence and video encoding/decoding, offloading heavy media processing from the core application server to ensure stability.
-
----
+### Using the Collaboration Tools
+- **Whiteboard**: Click the "Board" icon during a chat or call.
+    - *Laser Pointer*: Use this to highlight areas of interest without making permanent marks.
+    - *Image Upload*: Drag and drop images (e.g., homework sheets) to annotate them together.
+- **Ghost Protocol**: Toggle this in Chat Settings if you require maximum privacy for your text exchange.
+- **Voice Notes**: Hold the Mic icon to record pronunciation samples for your peer to review.
 
 ## Infrastructure and Deployment
 
@@ -74,9 +79,7 @@ The entire application stack is containerized using Docker to ensure environment
 ### Orchestration
 `docker-compose` is used to orchestrate the multi-container application, defining service dependencies (e.g., frontend waits for backend health checks) and managing shared volumes and networks.
 
----
-
-## 🛡️ Security Features Breakdown
+## Security Features Breakdown
 
 Stellar utilizes a **Defense-in-Depth** strategy, implementing multiple layers of security controls to protect user data and application integrity.
 
@@ -89,8 +92,6 @@ Stellar utilizes a **Defense-in-Depth** strategy, implementing multiple layers o
 | **Strict CORS Policy** | *Access Control* | Cross-Origin Resource Sharing is restrictively configured to allow requests *only* from trusted frontend domains, preventing unauthorized cross-origin API calls. |
 | **Socket.io Origin Checks** | *Real-time Security* | The signaling server strictly validates the handshake origin, ensuring only clients from the approved dashboard can establish a WebSocket connection. |
 | **OAuth 2.0 via Passport** | *Authentication* | Delegates credential handling to Google's robust OAuth provider, reducing the risk of password leaks or weak credential storage on the server side. |
-
----
 
 ## Installation and Setup Guidelines
 
@@ -133,8 +134,6 @@ cd frontend
 npm install
 npm run dev
 ```
-
----
 
 ## License
 This project is licensed under the MIT License.
