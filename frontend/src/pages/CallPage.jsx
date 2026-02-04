@@ -9,7 +9,7 @@ import {
   StreamVideoClient,
   StreamCall,
   CallControls,
-  SpeakerLayout,
+  PaginatedGridLayout,
   StreamTheme,
   CallingState,
   useCallStateHooks,
@@ -77,7 +77,7 @@ const CallPage = () => {
 
   return (
     <div className="h-screen flex flex-col items-center justify-center">
-      <div className="relative">
+      <div className="relative w-full h-full">
         {client && call ? (
           <StreamVideo client={client}>
             <StreamCall call={call}>
@@ -104,7 +104,7 @@ const CallContent = () => {
 
   return (
     <StreamTheme>
-      <SpeakerLayout />
+      <PaginatedGridLayout />
       <CallControls />
     </StreamTheme>
   );
