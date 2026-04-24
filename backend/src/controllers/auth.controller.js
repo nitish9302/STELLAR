@@ -33,8 +33,8 @@ export async function signup(req, res) {
         .json({ message: "Email already exists, please use a different one" });
     }
 
-    const idx = Math.floor(Math.random() * 100) + 1;
-    const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
+    const idx = Math.random().toString(36).substring(7);
+    const randomAvatar = `https://api.dicebear.com/9.x/bottts/svg?seed=${idx}`;
 
     // Create user but don't verify email yet
     const newUser = await User.create({

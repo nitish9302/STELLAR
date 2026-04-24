@@ -26,9 +26,8 @@ passport.use(
 
         if (!user) {
           // Create new user (Google signup)
-          const idx = Math.floor(Math.random() * 100) + 1;
-          const randomAvatar =
-            picture || `https://avatar.iran.liara.run/public/${idx}.png`;
+          const idx = Math.random().toString(36).substring(7);
+          const randomAvatar = picture || `https://api.dicebear.com/9.x/bottts/svg?seed=${idx}`;
 
           user = await User.create({
             fullName: displayName || email.split("@")[0],

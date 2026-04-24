@@ -77,8 +77,8 @@ const ProfilePage = () => {
   };
 
   const handleRandomAvatar = () => {
-    const idx = Math.floor(Math.random() * 100) + 1;
-    const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
+    const idx = Math.random().toString(36).substring(7);
+    const randomAvatar = `https://api.dicebear.com/9.x/bottts/svg?seed=${idx}`;
     setFormState({ ...formState, profilePic: randomAvatar });
     setHasChanges(true);
     toast.success("Random profile picture generated!");
